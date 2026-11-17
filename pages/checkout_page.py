@@ -1,13 +1,26 @@
 from decimal import Decimal
+from pathlib import Path
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 from pages.base_page import BasePage
+from utils.logger import get_logger
 
-class CheckoutPage:
 
-    # Customer information locators
+logger = get_logger(__name__)
+
+
+# ==========================================
+# CHECKOUT PAGE
+# ==========================================
+
+class CheckoutPage(BasePage):
+
+    # ==========================================
+    # CUSTOMER INFORMATION LOCATORS
+    # ==========================================
+
     FIRST_NAME = (
         By.ID,
         "first-name"
@@ -38,7 +51,10 @@ class CheckoutPage:
         "[data-test='error']"
     )
 
-    # Checkout overview locators
+    # ==========================================
+    # CHECKOUT OVERVIEW LOCATORS
+    # ==========================================
+
     OVERVIEW_CONTAINER = (
         By.ID,
         "checkout_summary_container"
@@ -79,7 +95,10 @@ class CheckoutPage:
         "finish"
     )
 
-    # Order confirmation locators
+    # ==========================================
+    # ORDER CONFIRMATION LOCATORS
+    # ==========================================
+
     COMPLETE_HEADER = (
         By.CLASS_NAME,
         "complete-header"
@@ -90,18 +109,31 @@ class CheckoutPage:
         "back-to-products"
     )
 
-    class Checkoutpage(BasePage):
+    # ==========================================
+    # INITIALIZATION
+    # ==========================================
 
-        def __init__(self, driver):
-            super().__init__(driver)
+    def __init__(self, driver):
 
-    # Enter customer information
+        super().__init__(driver)
+
+        logger.info("CheckoutPage initialized")
+
+    # ==========================================
+    # ENTER CUSTOMER INFORMATION
+    # ==========================================
+
     def enter_customer_information(
-            self,
-            first_name,
-            last_name,
-            postal_code
+        self,
+        first_name,
+        last_name,
+        postal_code
     ):
+
+        logger.info(
+            "Entering customer information"
+        )
+
         first = self.wait.until(
             EC.element_to_be_clickable(
                 self.FIRST_NAME
@@ -129,10 +161,20 @@ class CheckoutPage:
         postal.clear()
         postal.send_keys(postal_code)
 
-        print("Customer information entered")
+        logger.info(
+            "Customer information entered successfully"
+        )
 
-    # Click continue
+    # ==========================================
+    # CLICK CONTINUE
+    # ==========================================
+
     def click_continue(self):
+
+        logger.info(
+            "Clicking checkout continue button"
+        )
+
         button = self.wait.until(
             EC.element_to_be_clickable(
                 self.CONTINUE_BUTTON
@@ -141,9 +183,14 @@ class CheckoutPage:
 
         button.click()
 
-        print("Continue button clicked")
+        logger.info(
+            "Continue button clicked successfully"
+        )
 
-    # Complete customer information
+    # ==========================================
+    # COMPLETE CUSTOMER INFORMATION
+    # ==========================================
+
     def continue_checkout(
         self,
         first_name,
@@ -159,7 +206,10 @@ class CheckoutPage:
 
         self.click_continue()
 
-    # Get validation error
+    # ==========================================
+    # GET VALIDATION ERROR
+    # ==========================================
+
     def get_error_message(self):
 
         error = self.wait.until(
@@ -168,12 +218,28 @@ class CheckoutPage:
             )
         )
 
-        return error.text
+        message = error.text
 
-    # Wait for overview page
+        logger.info(
+            f"Checkout validation message: {message}"
+        )
+
+        return message
+
+    # ==========================================
+    # WAIT FOR CHECKOUT OVERVIEW
+    # ==========================================
+
     def wait_for_overview(self):
+
+        logger.info(
+            "Waiting for checkout overview"
+        )
+
         self.wait.until(
-            EC.url_contains("checkout-step-two.html")
+            EC.url_contains(
+                "checkout-step-two.html"
+            )
         )
 
         self.wait.until(
@@ -182,30 +248,44 @@ class CheckoutPage:
             )
         )
 
-        print("Checkout overview loaded")
+        logger.info(
+            "Checkout overview loaded successfully"
+        )
 
-    # Get overview products
+    # ==========================================
+    # GET OVERVIEW PRODUCTS
+    # ==========================================
+
     def get_overview_products(self):
 
         items = self.driver.find_elements(
             *self.OVERVIEW_PRODUCTS
         )
 
-        return [
+        products = [
             item.find_element(
                 *self.PRODUCT_NAMES
             ).text
             for item in items
         ]
 
-    # Get product prices
+        logger.info(
+            f"Checkout products retrieved: {products}"
+        )
+
+        return products
+
+    # ==========================================
+    # GET PRODUCT PRICES
+    # ==========================================
+
     def get_product_prices(self):
 
         items = self.driver.find_elements(
             *self.OVERVIEW_PRODUCTS
         )
 
-        return [
+        prices = [
             Decimal(
                 item.find_element(
                     *self.PRODUCT_PRICES
@@ -214,58 +294,123 @@ class CheckoutPage:
             for item in items
         ]
 
-    # Extract monetary amount
+        logger.info(
+            f"Checkout product prices: {prices}"
+        )
+
+        return prices
+
+    # ==========================================
+    # EXTRACT MONETARY AMOUNT
+    # ==========================================
+
     def get_amount(self, locator):
 
         element = self.wait.until(
-            EC.visibility_of_element_located(locator)
+            EC.visibility_of_element_located(
+                locator
+            )
         )
 
-        return Decimal(
+        amount = Decimal(
             element.text.split("$")[-1]
         )
 
-    # Get subtotal
+        return amount
+
+    # ==========================================
+    # GET SUBTOTAL
+    # ==========================================
+
     def get_subtotal(self):
 
-        return self.get_amount(
+        subtotal = self.get_amount(
             self.SUBTOTAL
         )
 
-    # Get tax
+        logger.info(
+            f"Order subtotal: {subtotal}"
+        )
+
+        return subtotal
+
+    # ==========================================
+    # GET TAX
+    # ==========================================
+
     def get_tax(self):
 
-        return self.get_amount(
+        tax = self.get_amount(
             self.TAX
         )
 
-    # Get total
+        logger.info(
+            f"Order tax: {tax}"
+        )
+
+        return tax
+
+    # ==========================================
+    # GET TOTAL
+    # ==========================================
+
     def get_total(self):
 
-        return self.get_amount(
+        total = self.get_amount(
             self.TOTAL
         )
 
-    # Verify calculated subtotal
+        logger.info(
+            f"Order total: {total}"
+        )
+
+        return total
+
+    # ==========================================
+    # CALCULATE SUBTOTAL
+    # ==========================================
+
     def calculate_subtotal(self):
 
         prices = self.get_product_prices()
 
-        return sum(
+        subtotal = sum(
             prices,
             Decimal("0.00")
         )
 
-    # Finish order
+        logger.info(
+            f"Calculated subtotal: {subtotal}"
+        )
+
+        return subtotal
+
+    # ==========================================
+    # FINISH ORDER
+    # ==========================================
+
     def finish_order(self):
 
-        self.wait.until(
+        logger.info(
+            "Completing customer order"
+        )
+
+        button = self.wait.until(
             EC.element_to_be_clickable(
                 self.FINISH_BUTTON
             )
-        ).click()
+        )
 
-    # Get order confirmation
+        button.click()
+
+        logger.info(
+            "Order submitted successfully"
+        )
+
+    # ==========================================
+    # GET ORDER CONFIRMATION
+    # ==========================================
+
     def get_confirmation_message(self):
 
         header = self.wait.until(
@@ -274,10 +419,23 @@ class CheckoutPage:
             )
         )
 
-        return header.text
+        message = header.text
 
-    # Return to inventory
+        logger.info(
+            f"Order confirmation: {message}"
+        )
+
+        return message
+
+    # ==========================================
+    # RETURN TO INVENTORY
+    # ==========================================
+
     def back_home(self):
+
+        logger.info(
+            "Navigating back to inventory"
+        )
 
         self.wait.until(
             EC.element_to_be_clickable(
@@ -285,8 +443,19 @@ class CheckoutPage:
             )
         ).click()
 
-    # Cancel checkout
+        logger.info(
+            "Returned to inventory successfully"
+        )
+
+    # ==========================================
+    # CANCEL CHECKOUT
+    # ==========================================
+
     def cancel_checkout(self):
+
+        logger.info(
+            "Cancelling checkout"
+        )
 
         self.wait.until(
             EC.element_to_be_clickable(
@@ -294,9 +463,24 @@ class CheckoutPage:
             )
         ).click()
 
+        logger.info(
+            "Checkout cancelled successfully"
+        )
+
+    # ==========================================
+    # WAIT FOR INFORMATION PAGE
+    # ==========================================
+
     def wait_for_information_page(self):
+
+        logger.info(
+            "Waiting for checkout information page"
+        )
+
         self.wait.until(
-            EC.url_contains("checkout-step-one.html")
+            EC.url_contains(
+                "checkout-step-one.html"
+            )
         )
 
         self.wait.until(
@@ -317,12 +501,29 @@ class CheckoutPage:
             )
         )
 
+        logger.info(
+            "Checkout information page loaded successfully"
+        )
+
+    # ==========================================
+    # DEBUG BROWSER STATE
+    # ==========================================
+
     def debug_browser_state(self):
-        print("\n========== DEBUG INFORMATION ==========")
 
-        print("Current URL:", self.driver.current_url)
+        print(
+            "\n========== DEBUG INFORMATION =========="
+        )
 
-        print("Page title:", self.driver.title)
+        print(
+            "Current URL:",
+            self.driver.current_url
+        )
+
+        print(
+            "Page title:",
+            self.driver.title
+        )
 
         print(
             "Page text:",
@@ -332,10 +533,17 @@ class CheckoutPage:
             ).text[:2000]
         )
 
-        self.driver.save_screenshot(
-            "screenshots/checkout_debug.png"
+        screenshot_dir = Path("screenshots")
+
+        screenshot_dir.mkdir(
+            parents=True,
+            exist_ok=True
         )
 
-        print("Screenshot saved")
+        self.driver.save_screenshot(
+            str(screenshot_dir / "checkout_debug.png")
+        )
 
-        print("========================================")
+        print(
+            "Screenshot saved"
+        )

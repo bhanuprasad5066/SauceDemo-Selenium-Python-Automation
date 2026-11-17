@@ -1,4 +1,7 @@
+import os
 import re
+import platform
+
 from datetime import datetime
 from pathlib import Path
 
@@ -13,6 +16,7 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+
 SCREENSHOT_DIR = PROJECT_ROOT / "screenshots"
 
 
@@ -23,16 +27,35 @@ SCREENSHOT_DIR = PROJECT_ROOT / "screenshots"
 @pytest.fixture
 def driver():
 
-    browser = DriverFactory.create_driver()
-
-    logger.info("Browser session started")
+    browser = None
 
     try:
+
+        browser = DriverFactory.create_driver()
+
+        logger.info("Browser session started")
+
         yield browser
 
     finally:
-        logger.info("Closing browser session")
-        browser.quit()
+
+        if browser is not None:
+
+            logger.info("Closing browser session")
+
+            try:
+
+                browser.quit()
+
+                logger.info(
+                    "Browser session closed successfully"
+                )
+
+            except Exception:
+
+                logger.exception(
+                    "Error while closing browser session"
+                )
 
 
 # ==========================================
@@ -43,9 +66,14 @@ def driver():
 def pytest_runtest_makereport(item, call):
 
     outcome = yield
+
     report = outcome.get_result()
 
-    setattr(item, "rep_" + report.when, report)
+    setattr(
+        item,
+        "rep_" + report.when,
+        report
+    )
 
     # Capture screenshot when a test fails
     if report.when == "call" and report.failed:
@@ -124,20 +152,21 @@ def pytest_runtest_makereport(item, call):
 
 def pytest_configure(config):
 
-    metadata = config.stash.get(
-        pytest.MetadataKey, None
-    ) if hasattr(pytest, "MetadataKey") else None
+    metadata = None
 
-    # Compatible with pytest-metadata plugin
     try:
+
         from pytest_metadata.plugin import metadata_key
 
         metadata = config.stash[metadata_key]
 
     except (ImportError, KeyError):
+
         metadata = None
 
     if metadata is not None:
+
+        is_ci = os.getenv("CI", "").lower() == "true"
 
         metadata["Project"] = (
             "SauceDemo Automation Framework"
@@ -156,7 +185,9 @@ def pytest_configure(config):
         )
 
         metadata["Environment"] = (
-            "Windows 11"
+            "GitHub Actions - Ubuntu"
+            if is_ci
+            else platform.system()
         )
 
 

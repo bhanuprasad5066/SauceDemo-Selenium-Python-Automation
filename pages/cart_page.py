@@ -1,14 +1,32 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 from pages.base_page import BasePage
+from utils.logger import get_logger
 
-class CartPage:
 
-    # Locators
-    CART_LIST = (By.CLASS_NAME, "cart_list")
+logger = get_logger(__name__)
 
-    CART_ITEMS = (By.CLASS_NAME, "cart_item")
+
+# ==========================================
+# CART PAGE
+# ==========================================
+
+class CartPage(BasePage):
+
+    # ==========================================
+    # LOCATORS
+    # ==========================================
+
+    CART_LIST = (
+        By.CLASS_NAME,
+        "cart_list"
+    )
+
+    CART_ITEMS = (
+        By.CLASS_NAME,
+        "cart_item"
+    )
 
     PRODUCT_NAMES = (
         By.CLASS_NAME,
@@ -30,13 +48,23 @@ class CartPage:
         "checkout"
     )
 
-    class Cartpage(BasePage):
+    # ==========================================
+    # INITIALIZATION
+    # ==========================================
 
-        def __init__(self, driver):
-            super().__init__(driver)
+    def __init__(self, driver):
 
-    # Wait for cart page
+        super().__init__(driver)
+
+        logger.info("CartPage initialized")
+
+    # ==========================================
+    # WAIT FOR CART PAGE
+    # ==========================================
+
     def wait_for_page(self):
+
+        logger.info("Waiting for cart page")
 
         self.wait.until(
             EC.visibility_of_element_located(
@@ -44,28 +72,42 @@ class CartPage:
             )
         )
 
-    # Get cart products
+        logger.info("Cart page loaded successfully")
+
+    # ==========================================
+    # GET CART PRODUCTS
+    # ==========================================
+
     def get_cart_products(self):
 
         items = self.driver.find_elements(
             *self.CART_ITEMS
         )
 
-        return [
+        products = [
             item.find_element(
                 *self.PRODUCT_NAMES
             ).text
             for item in items
         ]
 
-    # Get cart product prices
+        logger.info(
+            f"Cart products retrieved: {products}"
+        )
+
+        return products
+
+    # ==========================================
+    # GET CART PRODUCT PRICES
+    # ==========================================
+
     def get_cart_prices(self):
 
         items = self.driver.find_elements(
             *self.CART_ITEMS
         )
 
-        return [
+        prices = [
             float(
                 item.find_element(
                     *self.PRODUCT_PRICES
@@ -74,17 +116,39 @@ class CartPage:
             for item in items
         ]
 
-    # Get cart item count
+        logger.info(
+            f"Cart product prices: {prices}"
+        )
+
+        return prices
+
+    # ==========================================
+    # GET CART ITEM COUNT
+    # ==========================================
+
     def get_cart_item_count(self):
 
-        return len(
+        count = len(
             self.driver.find_elements(
                 *self.CART_ITEMS
             )
         )
 
-    # Remove product by name
+        logger.info(
+            f"Total cart items: {count}"
+        )
+
+        return count
+
+    # ==========================================
+    # REMOVE PRODUCT BY NAME
+    # ==========================================
+
     def remove_product(self, product_name):
+
+        logger.info(
+            f"Removing product from cart: {product_name}"
+        )
 
         items = self.driver.find_elements(
             *self.CART_ITEMS
@@ -103,16 +167,35 @@ class CartPage:
                     "button[data-test^='remove-']"
                 )
 
+                self.wait.until(
+                    EC.element_to_be_clickable(
+                        remove_button
+                    )
+                )
+
                 remove_button.click()
 
+                logger.info(
+                    f"Product removed successfully: {product_name}"
+                )
+
                 return
+
+        logger.error(
+            f"Product not found in cart: {product_name}"
+        )
 
         raise AssertionError(
             f"Product not found in cart: {product_name}"
         )
 
-    # Continue shopping
+    # ==========================================
+    # CONTINUE SHOPPING
+    # ==========================================
+
     def continue_shopping(self):
+
+        logger.info("Continuing shopping")
 
         self.wait.until(
             EC.element_to_be_clickable(
@@ -120,11 +203,24 @@ class CartPage:
             )
         ).click()
 
-    # Proceed to checkout
+        logger.info(
+            "Navigated back to inventory"
+        )
+
+    # ==========================================
+    # PROCEED TO CHECKOUT
+    # ==========================================
+
     def click_checkout(self):
+
+        logger.info("Proceeding to checkout")
 
         self.wait.until(
             EC.element_to_be_clickable(
                 self.CHECKOUT_BUTTON
             )
         ).click()
+
+        logger.info(
+            "Checkout button clicked successfully"
+        )

@@ -1,13 +1,19 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+
 from pages.base_page import BasePage
 from utils.logger import get_logger
+
 
 logger = get_logger(__name__)
 
 
-class InventoryPage:
+# ==========================================
+# INVENTORY PAGE
+# ==========================================
+
+class InventoryPage(BasePage):
 
     # ==========================================
     # PAGE URL
@@ -59,10 +65,9 @@ class InventoryPage:
     # INITIALIZATION
     # ==========================================
 
-    class InventoryPage(BasePage):
+    def __init__(self, driver):
 
-        def __init__(self, driver):
-            super().__init__(driver)
+        super().__init__(driver)
 
         logger.info("InventoryPage initialized")
 
@@ -376,9 +381,7 @@ class InventoryPage:
                 )
 
                 self.wait.until(
-                    EC.element_to_be_clickable(
-                        button
-                    )
+                    EC.element_to_be_clickable(button)
                 )
 
                 button.click()
