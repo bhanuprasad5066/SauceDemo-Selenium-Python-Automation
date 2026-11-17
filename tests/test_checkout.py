@@ -1,15 +1,16 @@
 from decimal import Decimal
 
-from pages.login_page import LoginPage
-from pages.inventory_page import InventoryPage
+import pytest
+
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
+from pages.inventory_page import InventoryPage
+from pages.login_page import LoginPage
 
 
 # Reusable login and cart preparation
 def prepare_checkout(driver):
 
-    # Login
     login = LoginPage(driver)
 
     login.open()
@@ -19,30 +20,29 @@ def prepare_checkout(driver):
         "secret_sauce"
     )
 
-    # Open inventory
     inventory = InventoryPage(driver)
 
     inventory.wait_for_page()
 
-    # Add product
     inventory.add_product_to_cart(
         "Sauce Labs Backpack"
     )
 
-    # Open cart
     inventory.open_cart()
 
     cart = CartPage(driver)
 
     cart.wait_for_page()
 
-    # Open checkout
     cart.click_checkout()
 
     return CheckoutPage(driver)
 
 
 # TC_CHECKOUT_001: Verify checkout page
+@pytest.mark.smoke
+@pytest.mark.sanity
+@pytest.mark.checkout
 def test_checkout_page_loads(driver):
 
     checkout = prepare_checkout(driver)
@@ -55,6 +55,8 @@ def test_checkout_page_loads(driver):
 
 
 # TC_CHECKOUT_002: Empty first name
+@pytest.mark.regression
+@pytest.mark.checkout
 def test_empty_first_name(driver):
 
     checkout = prepare_checkout(driver)
@@ -73,6 +75,8 @@ def test_empty_first_name(driver):
 
 
 # TC_CHECKOUT_003: Empty last name
+@pytest.mark.regression
+@pytest.mark.checkout
 def test_empty_last_name(driver):
 
     checkout = prepare_checkout(driver)
@@ -91,6 +95,8 @@ def test_empty_last_name(driver):
 
 
 # TC_CHECKOUT_004: Empty postal code
+@pytest.mark.regression
+@pytest.mark.checkout
 def test_empty_postal_code(driver):
 
     checkout = prepare_checkout(driver)
@@ -109,6 +115,8 @@ def test_empty_postal_code(driver):
 
 
 # TC_CHECKOUT_005: Valid customer information
+@pytest.mark.smoke
+@pytest.mark.checkout
 def test_valid_customer_information(driver):
 
     checkout = prepare_checkout(driver)
@@ -127,6 +135,8 @@ def test_valid_customer_information(driver):
 
 
 # TC_CHECKOUT_006: Verify order products
+@pytest.mark.regression
+@pytest.mark.checkout
 def test_order_products(driver):
 
     checkout = prepare_checkout(driver)
@@ -147,6 +157,9 @@ def test_order_products(driver):
 
 
 # TC_CHECKOUT_007: Verify subtotal
+@pytest.mark.regression
+@pytest.mark.critical
+@pytest.mark.checkout
 def test_order_subtotal(driver):
 
     checkout = prepare_checkout(driver)
@@ -171,6 +184,9 @@ def test_order_subtotal(driver):
 
 
 # TC_CHECKOUT_008: Verify tax and total
+@pytest.mark.regression
+@pytest.mark.critical
+@pytest.mark.checkout
 def test_order_tax_and_total(driver):
 
     checkout = prepare_checkout(driver)
@@ -209,6 +225,9 @@ def test_order_tax_and_total(driver):
 
 
 # TC_CHECKOUT_009: Complete order
+@pytest.mark.smoke
+@pytest.mark.critical
+@pytest.mark.checkout
 def test_complete_order(driver):
 
     checkout = prepare_checkout(driver)
@@ -231,6 +250,8 @@ def test_complete_order(driver):
 
 
 # TC_CHECKOUT_010: Return to inventory
+@pytest.mark.regression
+@pytest.mark.checkout
 def test_back_to_inventory(driver):
 
     checkout = prepare_checkout(driver)

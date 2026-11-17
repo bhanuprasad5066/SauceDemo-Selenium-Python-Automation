@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 from utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 

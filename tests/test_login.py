@@ -1,6 +1,12 @@
+import pytest
+
 from pages.login_page import LoginPage
 
 
+# TC_LOGIN_001: Valid login
+@pytest.mark.smoke
+@pytest.mark.sanity
+@pytest.mark.login
 def test_valid_login(driver):
 
     login = LoginPage(driver)
@@ -14,6 +20,9 @@ def test_valid_login(driver):
     print("\nPASS: Valid login successful")
 
 
+# TC_LOGIN_002: Invalid username
+@pytest.mark.regression
+@pytest.mark.login
 def test_invalid_username(driver):
 
     login = LoginPage(driver)
@@ -29,6 +38,9 @@ def test_invalid_username(driver):
     print("\nPASS: Invalid username validation successful")
 
 
+# TC_LOGIN_003: Invalid password
+@pytest.mark.regression
+@pytest.mark.login
 def test_invalid_password(driver):
 
     login = LoginPage(driver)
@@ -44,6 +56,9 @@ def test_invalid_password(driver):
     print("\nPASS: Invalid password validation successful")
 
 
+# TC_LOGIN_004: Locked-out user
+@pytest.mark.regression
+@pytest.mark.login
 def test_locked_out_user(driver):
 
     login = LoginPage(driver)
@@ -59,6 +74,9 @@ def test_locked_out_user(driver):
     print("\nPASS: Locked-out user validation successful")
 
 
+# TC_LOGIN_005: Empty username
+@pytest.mark.regression
+@pytest.mark.login
 def test_empty_username(driver):
 
     login = LoginPage(driver)
@@ -74,6 +92,9 @@ def test_empty_username(driver):
     print("\nPASS: Empty username validation successful")
 
 
+# TC_LOGIN_006: Empty password
+@pytest.mark.regression
+@pytest.mark.login
 def test_empty_password(driver):
 
     login = LoginPage(driver)
@@ -89,6 +110,9 @@ def test_empty_password(driver):
     print("\nPASS: Empty password validation successful")
 
 
+# TC_LOGIN_007: Both fields empty
+@pytest.mark.regression
+@pytest.mark.login
 def test_both_fields_empty(driver):
 
     login = LoginPage(driver)

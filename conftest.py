@@ -1,17 +1,16 @@
 import os
-import re
 import platform
-
+import re
 from datetime import datetime
+from html import escape
 from pathlib import Path
 
 import pytest
 import pytest_html
 
-from utils.driver_factory import DriverFactory
 from utils.config_reader import config
+from utils.driver_factory import DriverFactory
 from utils.logger import get_logger
-
 
 logger = get_logger(__name__)
 
@@ -69,10 +68,17 @@ def pytest_runtest_makereport(item, call):
 
     report = outcome.get_result()
 
+    # Store test execution reports
     setattr(
         item,
         "rep_" + report.when,
         report
+    )
+
+    # Add test description to HTML report
+    report.description = (
+        item.function.__doc__
+        or item.nodeid
     )
 
     # Capture screenshot when a test fails
@@ -208,3 +214,49 @@ def pytest_html_report_title(report):
     report.title = (
         "SauceDemo Professional QA Automation Report"
     )
+
+
+# ==========================================
+# ADVANCED HTML REPORT CUSTOMIZATION
+# ==========================================
+
+def pytest_html_results_table_header(cells):
+
+    cells.insert(
+        2,
+        "<th>Description</th>"
+    )
+
+
+def pytest_html_results_table_row(report, cells):
+
+    description = getattr(
+        report,
+        "description",
+        "No description available"
+    )
+
+    cells.insert(
+        2,
+        f"<td>{escape(description)}</td>"
+    )
+
+
+# ==========================================
+# HTML REPORT SUMMARY
+# ==========================================
+
+def pytest_html_results_summary(
+    prefix,
+    summary,
+    postfix
+):
+
+    prefix.extend([
+        "<h2>SauceDemo Automation Framework</h2>",
+        "<p>Automation: Selenium WebDriver + Python</p>",
+        "<p>Test Runner: Pytest</p>",
+        "<p>Architecture: Page Object Model</p>",
+        "<p>Reporting: pytest-html</p>",
+        "<p>CI/CD: GitHub Actions</p>"
+    ])

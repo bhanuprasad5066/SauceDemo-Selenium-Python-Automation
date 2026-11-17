@@ -1,6 +1,8 @@
-from pages.login_page import LoginPage
-from pages.inventory_page import InventoryPage
+import pytest
+
 from pages.cart_page import CartPage
+from pages.inventory_page import InventoryPage
+from pages.login_page import LoginPage
 
 
 def login_as_standard_user(driver):
@@ -22,6 +24,9 @@ def login_as_standard_user(driver):
 
 
 # TC_CART_001: Add single product
+@pytest.mark.smoke
+@pytest.mark.critical
+@pytest.mark.cart
 def test_add_single_product(driver):
 
     inventory = login_as_standard_user(driver)
@@ -36,6 +41,8 @@ def test_add_single_product(driver):
 
 
 # TC_CART_002: Verify cart badge
+@pytest.mark.sanity
+@pytest.mark.cart
 def test_cart_badge_count(driver):
 
     inventory = login_as_standard_user(driver)
@@ -50,6 +57,8 @@ def test_cart_badge_count(driver):
 
 
 # TC_CART_003: Add multiple products
+@pytest.mark.regression
+@pytest.mark.cart
 def test_add_multiple_products(driver):
 
     inventory = login_as_standard_user(driver)
@@ -72,6 +81,8 @@ def test_add_multiple_products(driver):
 
 
 # TC_CART_004: Verify product names
+@pytest.mark.regression
+@pytest.mark.cart
 def test_verify_cart_product_names(driver):
 
     inventory = login_as_standard_user(driver)
@@ -100,6 +111,8 @@ def test_verify_cart_product_names(driver):
 
 
 # TC_CART_005: Verify product prices
+@pytest.mark.regression
+@pytest.mark.cart
 def test_verify_cart_product_prices(driver):
 
     inventory = login_as_standard_user(driver)
@@ -124,6 +137,8 @@ def test_verify_cart_product_prices(driver):
 
 
 # TC_CART_006: Remove single product
+@pytest.mark.regression
+@pytest.mark.cart
 def test_remove_single_product(driver):
 
     inventory = login_as_standard_user(driver)
@@ -148,6 +163,8 @@ def test_remove_single_product(driver):
 
 
 # TC_CART_007: Remove all products
+@pytest.mark.regression
+@pytest.mark.cart
 def test_remove_all_products(driver):
 
     inventory = login_as_standard_user(driver)
@@ -176,6 +193,8 @@ def test_remove_all_products(driver):
 
 
 # TC_CART_008: Verify empty cart
+@pytest.mark.regression
+@pytest.mark.cart
 def test_empty_cart(driver):
 
     inventory = login_as_standard_user(driver)
@@ -192,6 +211,8 @@ def test_empty_cart(driver):
 
 
 # TC_CART_009: Continue shopping
+@pytest.mark.regression
+@pytest.mark.cart
 def test_continue_shopping(driver):
 
     inventory = login_as_standard_user(driver)
@@ -214,6 +235,9 @@ def test_continue_shopping(driver):
 
 
 # TC_CART_010: Proceed to checkout
+@pytest.mark.smoke
+@pytest.mark.critical
+@pytest.mark.cart
 def test_proceed_to_checkout(driver):
 
     inventory = login_as_standard_user(driver)

@@ -1,5 +1,6 @@
-from openpyxl import Workbook
 from pathlib import Path
+
+from openpyxl import Workbook
 
 # Excel file location
 DATA_DIR = Path(__file__).parent

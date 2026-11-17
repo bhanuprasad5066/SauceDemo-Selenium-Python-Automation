@@ -1,10 +1,9 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 
 from pages.base_page import BasePage
 from utils.logger import get_logger
-
 
 logger = get_logger(__name__)
 
@@ -306,11 +305,11 @@ class InventoryPage(BasePage):
             )
 
             self.wait.until(
-                lambda driver:
-                image.get_attribute("complete") == "true"
-                and self.driver.execute_script(
-                    "return arguments[0].naturalWidth > 0",
-                    image
+                lambda driver, image=image: (
+                    image.get_attribute("complete") == "true"
+                    and self.driver.execute_script(
+                        "return arguments[0].naturalWidth > 0", image
+                    )
                 )
             )
 

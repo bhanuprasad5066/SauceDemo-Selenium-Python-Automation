@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 from utils.logger import get_logger
 
-
 logger = get_logger(__name__)
 
 
@@ -433,19 +432,14 @@ class CheckoutPage(BasePage):
 
     def back_home(self):
 
-        logger.info(
-            "Navigating back to inventory"
-        )
+        logger.info("Navigating back to inventory")
 
-        self.wait.until(
-            EC.element_to_be_clickable(
-                self.BACK_HOME_BUTTON
-            )
-        ).click()
+        self.wait.until(EC.element_to_be_clickable(self.BACK_HOME_BUTTON)).click()
 
-        logger.info(
-            "Returned to inventory successfully"
-        )
+        # Wait until inventory page is fully loaded
+        self.wait.until(EC.url_contains("inventory.html"))
+
+        logger.info("Returned to inventory successfully")
 
     # ==========================================
     # CANCEL CHECKOUT

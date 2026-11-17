@@ -1,15 +1,17 @@
 import pytest
 
 from pages.login_page import LoginPage
-
-from utils.test_data_reader import (
-    load_csv_data,
-    load_json_data,
-    load_excel_data
-
-)
-
 from utils.logger import get_logger
+from utils.test_data_reader import load_csv_data, load_excel_data, load_json_data
+
+# ==================================================
+# PYTEST MARKERS
+# ==================================================
+
+pytestmark = [
+    pytest.mark.regression,
+    pytest.mark.login
+]
 
 
 logger = get_logger(__name__)
@@ -123,9 +125,7 @@ def test_login_with_json_data(driver, test_data):
 
 @pytest.mark.parametrize(
     "test_data",
-
     load_excel_data("login_test_data.xlsx"),
-
     ids=lambda data: data["case_id"]
 )
 def test_login_with_excel_data(driver, test_data):

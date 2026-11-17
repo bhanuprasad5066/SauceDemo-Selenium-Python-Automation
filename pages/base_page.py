@@ -1,18 +1,12 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-from selenium.webdriver.support.ui import WebDriverWait, Select
-
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
-
-from selenium.common.exceptions import (
-    TimeoutException,
-    NoSuchElementException
-)
+from selenium.webdriver.support.ui import Select, WebDriverWait
 
 from utils.config_reader import config
 from utils.logger import get_logger
-
 
 logger = get_logger(__name__)
 

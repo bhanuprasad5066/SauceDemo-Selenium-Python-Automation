@@ -1,14 +1,12 @@
 import os
 
 from selenium import webdriver
-
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 from utils.config_reader import config
 from utils.logger import get_logger
-
 
 logger = get_logger(__name__)
 

@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: saucedemo-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   selenium-tests:
 
@@ -26,58 +30,67 @@ jobs:
 
     steps:
 
-      # Step 1: Checkout repository
+      # 1. Checkout repository
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # Step 2: Setup Python
+      # 2. Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.15"
+          python-version: "3.12"
           cache: pip
 
-      # Step 3: Setup Chrome
+      # 3. Setup Chrome
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # Step 4: Verify Environment
-      - name: Verify Python and Chrome
+      # 4. Verify environment
+      - name: Verify Environment
         run: |
           python --version
           google-chrome --version
 
-      # Step 5: Install Dependencies
+      # 5. Install dependencies
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install openpyxl
+          pip install openpyxl pytest-xdist pytest-cov ruff
 
-      # Step 6: Create Report Directories
+      # 6. Create directories
       - name: Create Test Directories
         run: |
           mkdir -p reports
           mkdir -p screenshots
           mkdir -p logs
 
-      # Step 7: Execute Automation Tests
-      - name: Run Selenium Pytest Suite
+      # 7. Code quality check
+      - name: Run Ruff Code Quality Check
         run: |
-          pytest -v -s \
+          ruff check .
+
+      # 8. Execute parallel Selenium tests
+      - name: Run Selenium Tests
+        run: |
+          pytest -n 2 \
+            --cov=pages \
+            --cov=utils \
+            --cov-report=term-missing \
+            --cov-report=xml:reports/coverage.xml \
             --html=reports/pytest_report.html \
             --self-contained-html
 
-      # Step 8: Upload HTML Report
-      - name: Upload HTML Test Report
+      # 9. Upload HTML and coverage reports
+      - name: Upload Test Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: saucedemo-html-report
+          name: saucedemo-test-reports
           path: reports/
           if-no-files-found: warn
 
-      # Step 9: Upload Failure Screenshots
+      # 10. Upload failure screenshots
       - name: Upload Failure Screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -86,7 +99,7 @@ jobs:
           path: screenshots/
           if-no-files-found: ignore
 
-      # Step 10: Upload Execution Logs
+      # 11. Upload execution logs
       - name: Upload Execution Logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,3 +107,4 @@ jobs:
           name: saucedemo-execution-logs
           path: logs/
           if-no-files-found: ignore
+          
