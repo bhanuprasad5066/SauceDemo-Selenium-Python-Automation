@@ -1,0 +1,6 @@
+case_id,username,password,expected_success,expected_error
+TC001,standard_user,secret_sauce,true,
+TC002,locked_out_user,secret_sauce,false,locked out
+TC003,invalid_user,secret_sauce,false,do not match
+TC004,,secret_sauce,false,Username is required
+TC005,standard_user,,false,Password is required

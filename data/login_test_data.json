@@ -1,0 +1,23 @@
+[
+    {
+        "case_id": "JSON001",
+        "username": "standard_user",
+        "password": "secret_sauce",
+        "expected_success": true,
+        "expected_error": ""
+    },
+    {
+        "case_id": "JSON002",
+        "username": "locked_out_user",
+        "password": "secret_sauce",
+        "expected_success": false,
+        "expected_error": "locked out"
+    },
+    {
+        "case_id": "JSON003",
+        "username": "invalid_user",
+        "password": "secret_sauce",
+        "expected_success": false,
+        "expected_error": "do not match"
+    }
+]
